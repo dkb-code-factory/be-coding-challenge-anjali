@@ -1,0 +1,11 @@
+# Gradle build folders
+.gradle/
+build/
+
+# IntelliJ project files
+.idea/
+*.iml
+
+# OS files
+.DS_Store
+Thumbs.db
