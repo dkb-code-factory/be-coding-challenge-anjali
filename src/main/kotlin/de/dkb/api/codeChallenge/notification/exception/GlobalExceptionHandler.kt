@@ -34,4 +34,12 @@ class GlobalExceptionHandler {
     fun handleNotificationTypeNotFound(ex: NotificationTypeNotFoundException) =
         buildResponseEntity(HttpStatus.BAD_REQUEST, ex.message ?: "Notification type not found")
 
+    @ExceptionHandler(UserNotFoundException::class)
+    fun handleUserNotFound(ex: UserNotFoundException) =
+        buildResponseEntity(HttpStatus.NOT_FOUND, ex.message ?: "User not found")
+
+    @ExceptionHandler(UserNotSubscribedException::class)
+    fun handleUserNotSubscribed(ex: UserNotSubscribedException) =
+        buildResponseEntity(HttpStatus.BAD_REQUEST, ex.message ?: "User not subscribed to category")
+
 }

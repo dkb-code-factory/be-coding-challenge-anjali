@@ -1,9 +1,6 @@
 package de.dkb.api.codeChallenge.notification
 
-import de.dkb.api.codeChallenge.notification.exception.CategoryNotFoundException
-import de.dkb.api.codeChallenge.notification.exception.NotificationException
-import de.dkb.api.codeChallenge.notification.exception.NotificationTypeAlreadyExistsException
-import de.dkb.api.codeChallenge.notification.exception.NotificationTypeNotFoundException
+import de.dkb.api.codeChallenge.notification.exception.*
 import de.dkb.api.codeChallenge.notification.model.*
 import de.dkb.api.codeChallenge.notification.repository.CategoryNotificationRepository
 import de.dkb.api.codeChallenge.notification.repository.UserRepository
@@ -53,27 +50,32 @@ class NotificationService(
     }
 
     fun sendNotification(notificationDto: NotificationDto) {
-        val subscriptions = userRepository.findAllByIdUserId(notificationDto.userId)
 
-        val isSubscribed = subscriptions.any { it.id.category == notificationDto.notificationType.toString() }
+        val normalizedType = notificationDto.notificationType.trim().lowercase()
 
-        if (!isSubscribed) return
+        //Check if userId exists
+        if (!userRepository.existsByUserId(notificationDto.userId)) {
+            throw UserNotFoundException(notificationDto.userId)
+        }
 
+        // Find category for this notification type
+        val desiredCategory = categoryNotificationRepository
+            .findCategoryByType(normalizedType)
+            ?.uppercase()
+            ?: throw NotificationTypeNotFoundException(notificationDto.notificationType)
+
+        //Check if user is subscribed to that category
+        if (!userRepository.existsByUserIdAndCategory(notificationDto.userId , desiredCategory))
+        {
+            throw UserNotSubscribedException(notificationDto.userId, desiredCategory)
+        }
+
+        //Send notification
         println(
             "Sending notification of type ${notificationDto.notificationType} " +
                     "to user ${notificationDto.userId}: ${notificationDto.message}"
         )
     }
-
-//    fun sendNotification(notificationDto: NotificationDto) =
-//        userRepository.findById(notificationDto.userId)
-//            .filter { it.notifications.contains(notificationDto.notificationType) }
-//            .ifPresent { // Logic to send notification to user
-//                println(
-//                    "Sending notification of type ${notificationDto.notificationType}" +
-//                            " to user ``````${it.id}: ${notificationDto.message}"
-//                )
-//            }
 
     @Transactional
     fun addNotificationType(request: AddNotificationTypeRequest) {

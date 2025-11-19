@@ -174,4 +174,65 @@ class NotificationServiceTest {
         verify(userRepository).save(captor.capture())
         assertEquals("A", captor.firstValue.id.category)
     }
+
+    @Test
+    fun `sendNotification should successfully send notification for a subscribed user`() {
+        val userId = UUID.randomUUID()
+        val notificationType = "type1"
+        val category = "A"
+        val message = "Testing send notification happy flow"
+        val notificationDto = NotificationDto(userId, notificationType, message)
+
+        whenever(userRepository.existsByUserId(userId)).thenReturn(true)
+        whenever(categoryNotificationRepository.findCategoryByType(notificationType)).thenReturn(category)
+        // Ensure the category returned is UPPERCASE
+        whenever(userRepository.existsByUserIdAndCategory(userId, category.uppercase())).thenReturn(true)
+
+        notificationService.sendNotification(notificationDto)
+
+        // Verify all required checks were performed exactly once
+        verify(userRepository, times(1)).existsByUserId(userId)
+        verify(categoryNotificationRepository, times(1)).findCategoryByType(notificationType)
+        verify(userRepository, times(1)).existsByUserIdAndCategory(userId, category.uppercase())
+
+    }
+
+    @Test
+    fun `sendNotification should throw UserNotFoundException when user does not exist`() {
+        val userId = UUID.randomUUID()
+        val notificationDto = NotificationDto(userId, "type1", "msg")
+
+        whenever(userRepository.existsByUserId(userId)).thenReturn(false)
+
+        assertThrows(UserNotFoundException::class.java) {
+            notificationService.sendNotification(notificationDto)
+        }
+    }
+
+    @Test
+    fun `sendNotification should throw NotificationTypeNotFoundException when type does not exist`() {
+        val userId = UUID.randomUUID()
+        val notificationDto = NotificationDto(userId, "typeX", "msg")
+
+        whenever(userRepository.existsByUserId(userId)).thenReturn(true)
+        whenever(categoryNotificationRepository.findCategoryByType("typex")).thenReturn(null)
+
+        assertThrows(NotificationTypeNotFoundException::class.java) {
+            notificationService.sendNotification(notificationDto)
+        }
+    }
+
+    @Test
+    fun `sendNotification should throw UserNotSubscribedException when user not subscribed to category`() {
+        val userId = UUID.randomUUID()
+        val notificationDto = NotificationDto(userId, "type1", "msg")
+
+        whenever(userRepository.existsByUserId(userId)).thenReturn(true)
+        whenever(categoryNotificationRepository.findCategoryByType("type1")).thenReturn("A")
+        whenever(userRepository.existsByUserIdAndCategory(userId, "A")).thenReturn(false)
+
+        assertThrows(UserNotSubscribedException::class.java) {
+            notificationService.sendNotification(notificationDto)
+        }
+    }
 }

@@ -12,4 +12,7 @@ interface CategoryNotificationRepository: JpaRepository<CategoryNotification, Ca
     fun findByIdNotificationType(notificationType: String): CategoryNotification?
 
     fun findByIdNotificationTypeIn(types: Set<String>): List<CategoryNotification>
+
+    @Query("SELECT c.id.category FROM CategoryNotification c WHERE c.id.notificationType = :type")
+    fun findCategoryByType(type: String): String?
 }

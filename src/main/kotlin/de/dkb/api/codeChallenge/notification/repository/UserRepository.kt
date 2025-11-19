@@ -17,7 +17,11 @@ interface UserRepository : JpaRepository<User, UserSubscriptionKey> {
     fun existsByUserIdAndCategory(userId: UUID, category: String): Boolean
 
 
-    fun findAllByIdUserId(userId: UUID): List<User>
+    @Query(
+        value = "SELECT EXISTS(SELECT 1 FROM users WHERE id = :userId)",
+        nativeQuery = true
+    )
+    fun existsByUserId(userId: UUID): Boolean
 
 
 
