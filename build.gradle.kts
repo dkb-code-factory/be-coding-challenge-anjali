@@ -1,6 +1,8 @@
 plugins {
-	kotlin("jvm") version "2.2.0"
-	kotlin("plugin.spring") version "2.2.0"
+	kotlin("jvm") version "2.0.0"
+	kotlin("plugin.spring") version "2.0.0"
+	kotlin("plugin.jpa") version "2.0.0"
+	kotlin("plugin.noarg") version "2.0.0"
 	id("org.springframework.boot") version "3.5.3"
 	id("io.spring.dependency-management") version "1.1.7"
 	id("com.autonomousapps.dependency-analysis") version "2.19.0"
@@ -21,7 +23,7 @@ repositories {
 
 dependencies {
 	// Core Kotlin dependencies
-	implementation("org.jetbrains.kotlin:kotlin-stdlib")
+	implementation(kotlin("stdlib"))
 	implementation("org.jetbrains.kotlin:kotlin-reflect")
 
 	// Spring Boot dependencies
@@ -29,6 +31,7 @@ dependencies {
 	implementation("org.springframework.boot:spring-boot-starter-data-jpa")
 	implementation("org.springframework.boot:spring-boot-starter-web")
 	implementation("org.springframework.kafka:spring-kafka")
+	implementation("org.springframework.boot:spring-boot-starter-validation")
 
 	// JSON serialization/deserialization
 	runtimeOnly("com.fasterxml.jackson.module:jackson-module-kotlin")
@@ -43,10 +46,14 @@ dependencies {
 
 	// Testing dependencies
 	testImplementation("org.springframework.boot:spring-boot-starter-test")
+	testImplementation("org.junit.jupiter:junit-jupiter:5.10.2")
+	testImplementation("org.jetbrains.kotlin:kotlin-test-junit5")
+	testImplementation("org.mockito:mockito-core:5.8.0")
+	testImplementation("org.mockito:mockito-junit-jupiter:5.8.0")
+	testImplementation("org.mockito.kotlin:mockito-kotlin:5.3.1")
 	testImplementation("org.testcontainers:junit-jupiter")
 	testImplementation("org.testcontainers:postgresql")
-	testRuntimeOnly("org.jetbrains.kotlin:kotlin-test-junit5")
-	testRuntimeOnly("org.springframework.kafka:spring-kafka-test")
+	testImplementation("org.springframework.kafka:spring-kafka-test")
 	testRuntimeOnly("org.junit.platform:junit-platform-launcher")
 }
 

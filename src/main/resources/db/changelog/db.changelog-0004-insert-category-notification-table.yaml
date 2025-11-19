@@ -1,0 +1,38 @@
+databaseChangeLog:
+  - changeSet:
+      id: "0004-insert-initial-category-types"
+      author: "Anjali"
+      changes:
+        - insert:
+            tableName: category_notifications
+            columns:
+              - column: { name: category, value: "A" }
+              - column: { name: notification_type, value: "type1" }
+
+        - insert:
+            tableName: category_notifications
+            columns:
+              - column: { name: category, value: "A" }
+              - column: { name: notification_type, value: "type2" }
+
+        - insert:
+            tableName: category_notifications
+            columns:
+              - column: { name: category, value: "A" }
+              - column: { name: notification_type, value: "type3" }
+
+        - insert:
+            tableName: category_notifications
+            columns:
+              - column: { name: category, value: "B" }
+              - column: { name: notification_type, value: "type4" }
+
+        - insert:
+            tableName: category_notifications
+            columns:
+              - column: { name: category, value: "B" }
+              - column: { name: notification_type, value: "type5" }
+
+      rollback:
+        - delete:
+            tableName: category_notifications

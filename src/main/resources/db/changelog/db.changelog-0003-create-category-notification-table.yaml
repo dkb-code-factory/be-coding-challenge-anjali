@@ -1,0 +1,25 @@
+databaseChangeLog:
+  - changeSet:
+      id: "0004-create-category-notification-table"
+      author: "Anjali"
+      changes:
+        - createTable:
+            tableName: "category_notifications"
+            columns:
+              - column:
+                  name: "category"
+                  type: "varchar(20)"
+                  constraints:
+                    nullable: false
+              - column:
+                  name: "notification_type"
+                  type: "varchar(20)"
+                  constraints:
+                    nullable: false
+        - addPrimaryKey:
+            tableName: category_notifications
+            columnNames: category, notification_type
+            constraintName: pk_category_notifications
+      rollback:
+        - dropTable:
+            tableName: "category_notifications"
