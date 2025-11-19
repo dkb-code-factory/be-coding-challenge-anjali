@@ -15,3 +15,6 @@ databaseChangeLog:
   - include:
       file: "db.changelog-0004-insert-category-notification-table.yaml"
       relativeToChangelogFile: true
+  - include:
+      file: "db.changelog-0005-migrate-users-from-notificationTypes-to-category.yaml"
+      relativeToChangelogFile: true

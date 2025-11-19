@@ -1,0 +1,48 @@
+databaseChangeLog:
+  - changeSet:
+      id: "0005-split-users-by-category"
+      author: "Anjali"
+      changes:
+
+        - renameTable:
+            oldTableName: "users"
+            newTableName: "users_old"
+
+        - createTable:
+            tableName: "users"
+            columns:
+              - column:
+                  name: "id"
+                  type: "uuid"
+                  constraints:
+                    nullable: false
+              - column:
+                  name: "category"
+                  type: "varchar(20)"
+                  constraints:
+                    nullable: false
+            primaryKey:
+              columnNames: "id, category"
+              constraintName: "pk_users_id_category"
+
+        - sql:
+            sql: |
+              INSERT INTO users (id, category)
+              SELECT u.id AS id,
+                     cn.category AS category
+              FROM users_old u
+              CROSS JOIN LATERAL unnest(string_to_array(u.notifications, ';')) AS t(notification_type)
+              JOIN category_notifications cn
+                ON cn.notification_type = t.notification_type
+              WHERE u.notifications IS NOT NULL
+              GROUP BY u.id, cn.category;
+
+        - dropTable:
+            tableName: "users_old"
+
+      rollback:
+        - dropTable:
+            tableName: "users"
+        - renameTable:
+            oldTableName: "users_old"
+            newTableName: "users"

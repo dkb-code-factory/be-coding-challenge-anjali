@@ -25,4 +25,13 @@ class GlobalExceptionHandler {
     @ExceptionHandler(NotificationException::class)
     fun handleGenericNotificationException(ex: NotificationException) =
         buildResponseEntity(HttpStatus.BAD_REQUEST, ex.message ?: "Notification error")
+
+    @ExceptionHandler(CategoryNotFoundException::class)
+    fun handleCategoryNotFound(ex: CategoryNotFoundException) =
+        buildResponseEntity(HttpStatus.BAD_REQUEST, ex.message ?: "No categories found")
+
+    @ExceptionHandler(NotificationTypeNotFoundException::class)
+    fun handleNotificationTypeNotFound(ex: NotificationTypeNotFoundException) =
+        buildResponseEntity(HttpStatus.BAD_REQUEST, ex.message ?: "Notification type not found")
+
 }
